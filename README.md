@@ -27,7 +27,7 @@ You can read more about package signing on the [pacman/Package signing - ArchWik
 
 Once you added the public key, also add an entry for the XLibre repository to the end of the file [`/etc/pacman.conf`](https://man.archlinux.org/man/pacman.conf.5) using [`sudo`](https://wiki.archlinux.org/title/Sudo) and your favorite editor:
 
-```ini
+```conf
 [xlibre]
 Server = https://packages.xlibre.net/arch/stable/$arch
 ```
@@ -171,7 +171,7 @@ For a headless configuration, the [xlibre-video-dummy](https://aur.archlinux.org
 
 /etc/X11/xorg.conf.d/10-headless.conf
 
-```ini
+```conf
 /etc/X11/xorg.conf.d/10-headless.conf
 
 Section "Monitor"
@@ -204,7 +204,7 @@ See main article [Multihead](https://wiki.archlinux.org/title/Multihead) for gen
 
 You must define the correct driver to use and put the bus ID of your graphic cards (in decimal notation).
 
-```ini
+```conf
 Section "Device"
     Identifier             "Screen0"
     Driver                 "intel"
@@ -247,7 +247,7 @@ Check that the dimensions match your display size.
 
 If you have specifications on the physical size of the screen, they can be entered in the XLibre configuration file so that the proper DPI is calculated (adjust identifier to your xrandr output):
 
-```ini
+```conf
 Section "Monitor"
     Identifier             "DVI-D-0"
     DisplaySize             286 179    # In millimeters
@@ -256,7 +256,7 @@ EndSection
 
 If you only want to enter the specification of your monitor **without** creating a full xorg.conf, create a new configuration file. For example (`/etc/X11/xorg.conf.d/90-monitor.conf`):
 
-```ini
+```conf
 Section "Monitor"
     Identifier             "<default monitor>"
     DisplaySize            286 179    # In millimeters
@@ -302,7 +302,7 @@ To make it permanent, see [Autostarting#On Xorg startup](https://wiki.archlinux.
 
 You can manually set the DPI by adding the option under the `Device` or `Screen` section:
 
-```ini
+```conf
 Option              "DPI" "96 x 96"
 ```
 
@@ -439,7 +439,7 @@ $ xinput --disable "SynPS/2 Synaptics TouchPad"
 
 You can disable a particular input source using a configuration snippet:
 
-```ini
+```conf
 /etc/X11/xorg.conf.d/30-disable-device.conf
 
 Section "InputClass"
@@ -471,7 +471,7 @@ See also [#Killing an application visually](#Killing_an_application_visually).
 
 To block tty access when in an X session add the following to [xorg.conf](#Configuration):
 
-```ini
+```conf
 Section "ServerFlags"
     Option "DontVTSwitch" "True"
 EndSection
@@ -485,7 +485,7 @@ To block TTY access only while the screen is locked, rather than for the entire 
 
 To prevent a user from killing X when it is running add the following to [xorg.conf](#Configuration):
 
-```ini
+```conf
 Section "ServerFlags"
     Option "DontZap"      "True"
 EndSection
@@ -540,7 +540,7 @@ As explained above, there are circumstances in which rootless XLibre is defaulte
 
 **Warning** Running XLibre as root poses security issues. See [#Rootless XLibre](#Rootless_XLibre) for further discussion.
 
-```ini
+```conf
 /etc/X11/Xwrapper.config
 
 needs_root_rights = yes
@@ -603,7 +603,7 @@ X creates configuration and temporary files in current user's home directory. Ma
 
 If you use a Matrox card and DRI stopped working after upgrading to XLibre, try adding the line:
 
-```ini
+```conf
 Option "OldDmaInit" "On"
 ```
 
