@@ -1,3 +1,6 @@
+![XLibre on Arch Linux](./docs/img/screenshot.jpg)
+
+
 # XLibre for Arch Linux based Systems
 
 [XLibre](https://grokipedia.com/page/XLibre) is the most actively developed community-maintained implementation of the [X Window System](https://en.wikipedia.org/wiki/X_Window_System) ( **X11** ) [display server](https://en.wikipedia.org/wiki/Windowing_system#Display_server). It has been forked from the [X.Org Server](https://en.wikipedia.org/wiki/X.Org_Server) of the [X.Org Foundation](https://en.wikipedia.org/wiki/X.Org_Foundation) in June 2025 and since then gained adoption in several Linux distributions as well as FreeBSD and GhostBSD.
