@@ -1,0 +1,20 @@
+# EditorConfig is awesome: https://editorconfig.org
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+spelling_language = en-US
+
+[{PKGBUILD,.SRCINFO}]
+indent_style = tab
+max_line_length = 100
+tab_width = 4
+
+[*.md]
+indent_size = 2
+indent_style = space
+max_line_length = off
+trim_trailing_whitespace = false
