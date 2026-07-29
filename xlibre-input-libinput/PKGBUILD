@@ -7,7 +7,7 @@
 pkgname=xlibre-input-libinput
 _pkgname=xf86-input-libinput
 pkgver=25.0.1
-pkgrel=3
+pkgrel=4
 pkgdesc="Generic input driver for the XLibre Xserver based on libinput"
 arch=('x86_64')
 license=('MIT')
