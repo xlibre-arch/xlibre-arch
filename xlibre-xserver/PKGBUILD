@@ -13,7 +13,7 @@ pkgname=(
 	'xlibre-xserver-xvfb'
 	'xlibre-xserver-devel' # devel last due to some checks there
 )
-pkgver=25.1.9
+pkgver=25.0.0.24
 pkgrel=1
 arch=('x86_64')
 license=(
@@ -65,13 +65,14 @@ makedepends=(
 	'xorg-util-macros'
 	'xorg-xkbcomp'
 	'xorgproto'
+	'xtrans'
 )
 source=(
 	https://github.com/X11Libre/xserver/archive/refs/tags/${pkgbase}-"${pkgver}".tar.gz
 	xvfb-run # with updates from FC master
 	xvfb-run.1
 )
-sha512sums=('ef3d142f1842b415ec4ee18cc8eb3d537700658717c1610e1c2ac20f35711807c140803bd36be4db719d1e40abdbd2eb3b0ca899c018361e3a3762a8b269f29a'
+sha512sums=('f446bbc427e885417e8c2e7148b8d47dcc8478e1e8a3eb680d522de216c0bfad56fde9aef2a9a8e6a2e4163e7442ec80d352a2e06ff41ad21c8617ec4160c18d'
             '672375cb5028ba9cda286e317d17bd8c9a9039483e7f79c21f223fd08ba07655729e9f59a082f4b8f5d8de45a77a9e9affce1002fb8c6657e26ef1a490654e49'
             'de5e2cb3c6825e6cf1f07ca0d52423e17f34d70ec7935e9dd24be5fb9883bf1e03b50ff584931bd3b41095c510ab2aa44d2573fd5feaebdcb59363b65607ff22')
 
@@ -90,17 +91,13 @@ build() {
 		-D xcsecurity=true \
 		-D xorg=true \
 		-D xephyr=true \
-		-D xfbdev=true \
 		-D glamor=true \
 		-D udev=true \
 		-D udev_kms=true \
 		-D dtrace=false \
-		-D seatd_libseat=false \
 		-D systemd_logind=true \
 		-D suid_wrapper=true \
 		-D linux_acpi=false \
-		-D legacy_nvidia_padding=true \
-		-D legacy_nvidia_340x=true \
 		-D xkb_dir=/usr/share/X11/xkb \
 		-D xkb_output_dir=/var/lib/xkb \
 		-D libunwind=true
@@ -190,11 +187,11 @@ package_xlibre-xserver() {
 		'xf86-video-modesetting'
 	)
 
-	_install fakeinstall/usr/bin/{X,Xorg,gtf,Xfbdev}
+	_install fakeinstall/usr/bin/{X,Xorg,gtf}
 	_install fakeinstall/usr/lib/Xorg{,.wrap}
 	_install fakeinstall/usr/lib/xorg/modules/*
-	_install fakeinstall/usr/share/X11/xorg.conf.d/10-{nvidia,nvidia-modules,quirks}.conf
-	_install fakeinstall/usr/share/man/man1/{Xorg,Xorg.wrap,gtf,Xfbdev}.1
+	_install fakeinstall/usr/share/X11/xorg.conf.d/10-quirks.conf
+	_install fakeinstall/usr/share/man/man1/{Xorg,Xorg.wrap,gtf}.1
 	_install fakeinstall/usr/share/man/man4/{exa,fbdevhw,inputtestdrv,modesetting}.4
 	_install fakeinstall/usr/share/man/man5/{Xwrapper.config,xorg.conf,xorg.conf.d}.5
 
@@ -323,9 +320,6 @@ package_xlibre-xserver-devel() {
 		'xlibre-xserver-devel-beta'
 		'xorg-server-devel'
 	)
-
-	rm fakeinstall/etc/X11/xorg.conf.d/10-nvidia-modules.conf.debian
-	rm fakeinstall/etc/X11/xorg.conf.d/10-nvidia.conf.debian
 
 	_install fakeinstall/usr/include/xorg/*
 	_install fakeinstall/usr/lib/pkgconfig/xlibre-server.pc
