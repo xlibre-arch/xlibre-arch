@@ -13,7 +13,7 @@ pkgname=(
 	'xlibre-xserver-xvfb'
 	'xlibre-xserver-devel' # devel last due to some checks there
 )
-pkgver=25.1.9
+pkgver=25.2.2
 pkgrel=1
 arch=('x86_64')
 license=(
@@ -71,7 +71,7 @@ source=(
 	xvfb-run # with updates from FC master
 	xvfb-run.1
 )
-sha512sums=('ef3d142f1842b415ec4ee18cc8eb3d537700658717c1610e1c2ac20f35711807c140803bd36be4db719d1e40abdbd2eb3b0ca899c018361e3a3762a8b269f29a'
+sha512sums=('b83e6f24cdb18ae8e7ceb0a09472bf795fee007c556da09c52c575dea9035a44b1bf19969d5487e86d8ad7b3074e942e04f3e1665b03781f8ab1b813e015ba85'
             '672375cb5028ba9cda286e317d17bd8c9a9039483e7f79c21f223fd08ba07655729e9f59a082f4b8f5d8de45a77a9e9affce1002fb8c6657e26ef1a490654e49'
             'de5e2cb3c6825e6cf1f07ca0d52423e17f34d70ec7935e9dd24be5fb9883bf1e03b50ff584931bd3b41095c510ab2aa44d2573fd5feaebdcb59363b65607ff22')
 
@@ -84,26 +84,32 @@ build() {
 	export LDFLAGS=${LDFLAGS/-Wl,-z,now}
 
 	arch-meson "xserver-${pkgbase}-${pkgver}" build \
-		-D ipv6=true \
-		-D xvfb=true \
-		-D xnest=true \
-		-D xcsecurity=true \
-		-D xorg=true \
 		-D xephyr=true \
 		-D xfbdev=true \
+		-D xnest=true \
+		-D xorg=true \
+		-D xvfb=true \
+		-D dri1=true \
+		-D dri2=true \
+		-D dri3=true \
+		-D dtrace=false \
+		-D gbm=true \
 		-D glamor=true \
+		-D glx_dri=true \
+		-D ipv6=true \
+		-D legacy_nvidia_340x=true \
+		-D legacy_nvidia_padding=true \
+		-D libunwind=true \
+		-D linux_acpi=false \
+		-D mitshm=true \
+		-D seatd_libseat=false \
+		-D suid_wrapper=true \
+		-D systemd_logind=true \
 		-D udev=true \
 		-D udev_kms=true \
-		-D dtrace=false \
-		-D seatd_libseat=false \
-		-D systemd_logind=true \
-		-D suid_wrapper=true \
-		-D linux_acpi=false \
-		-D legacy_nvidia_padding=true \
-		-D legacy_nvidia_340x=true \
+		-D xcsecurity=true \
 		-D xkb_dir=/usr/share/X11/xkb \
-		-D xkb_output_dir=/var/lib/xkb \
-		-D libunwind=true
+		-D xkb_output_dir=/var/lib/xkb
 
 	# Print config
 	meson configure build
@@ -141,7 +147,6 @@ package_xlibre-xserver-common() {
 	_install fakeinstall/usr/lib/xorg/protocol.txt
 	_install fakeinstall/usr/share/man/man1/Xserver.1
 
-	install -m644 -Dt "${pkgdir}/var/lib/xkb/" "xserver-${pkgbase}-${pkgver}"/xkb/README.compiled
 	# license
 	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
 }
@@ -194,7 +199,7 @@ package_xlibre-xserver() {
 	_install fakeinstall/usr/lib/Xorg{,.wrap}
 	_install fakeinstall/usr/lib/xorg/modules/*
 	_install fakeinstall/usr/share/X11/xorg.conf.d/10-{nvidia,nvidia-modules,quirks}.conf
-	_install fakeinstall/usr/share/man/man1/{Xorg,Xorg.wrap,gtf,Xfbdev}.1
+	_install fakeinstall/usr/share/man/man1/{Xorg,Xorg.wrap,gtf,Xfbdev,Xkdrive}.1
 	_install fakeinstall/usr/share/man/man4/{exa,fbdevhw,inputtestdrv,modesetting}.4
 	_install fakeinstall/usr/share/man/man5/{Xwrapper.config,xorg.conf,xorg.conf.d}.5
 
@@ -315,7 +320,7 @@ package_xlibre-xserver-devel() {
 		'mesa'
 		'pixman'
 		'xlibre-xserver'
-		'xorg-util-macros'
+		'xorg-util-macros' # not required but almost every XLibre pkg needs it
 		'xorgproto'
 	)
 	provides=('xorg-server-devel')
