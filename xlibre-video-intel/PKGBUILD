@@ -6,7 +6,7 @@
 
 pkgname=xlibre-video-intel
 _pkgname=xf86-video-intel
-pkgver=25.0.0
+pkgver=25.0.2
 pkgrel=10
 arch=('x86_64')
 url='https://github.com/X11Libre/xf86-video-intel'
@@ -68,7 +68,7 @@ conflicts=(
 )
 groups=('xlibre-drivers')
 source=("${url}/archive/refs/tags/xlibre-${_pkgname}-${pkgver}.tar.gz")
-sha256sums=('c37410bc6efd5789adcd9fd2c91308a73101b08419309d4755bd6b5fa5254eff')
+sha256sums=('e4513cf871374cc5df4d0ae5dcd2787539c38801295ab5a9b3470cf0dd193a43')
 options=('!lto')
 
 prepare() {
