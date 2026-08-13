@@ -22,22 +22,44 @@ sudo pacman-key --lsign-key B97F7C613F359424
 
 You can read more about package signing on the [pacman/Package signing - ArchWiki](https://wiki.archlinux.org/title/Pacman/Package_signing#Adding_unofficial_keys) page.
 
-### Adding the Repository to Pacman
+### Adding a Repository to Pacman
 
 Once you added the public key, also add an entry for the XLibre repository to the end of the file [`/etc/pacman.conf`](https://man.archlinux.org/man/pacman.conf.5) using [`sudo`](https://wiki.archlinux.org/title/Sudo) and your favorite editor:
 
+#### Stable Repository
+
+This repository contains the latest stable and tested XLibre 25.1 release series.
+
 ```conf
-[xlibre]
+[xlibre-stable]
 Server = https://packages.xlibre.net/arch/stable/$arch
 ```
 
-Run `pacman` to update all package indexes and installed packages:
+#### Oldstable Repository
+
+This repository contains the former stable and tested XLibre 25.0 release series.
+
+```conf
+[xlibre-oldstable]
+Server = https://packages.xlibre.net/arch/oldstable/$arch
+```
+
+#### Beta Repository
+
+This repository contains the next XLibre 25.2 release series. As the name implies, the packaged software is beta until the XLibre project considers 25.2.x as stable.
+
+```ini
+[xlibre-beta]
+Server = https://packages.xlibre.net/arch/beta/$arch
+```
+
+### Installing XLibre
+
+After adding one of the above repositories, nun `pacman` to update all package indexes and installed packages:
 
 ```shell
 sudo pacman -Syyu
 ```
-
-### Installing XLibre
 
 Installing XLibre is as easy as installing the `xlibre-meta` package:
 
@@ -66,9 +88,15 @@ It says XLibre? Congratulations!
 
 Besides support for AMD, Intel, newer Nvidia, and many other drivers, the XLibre Xserver 25.1 series also added support for the legacy proprietary Nvidia drivers v340, v390, and v470. It is enabled in the [xlibre-xserver](https://github.com/xlibre-arch/xlibre-xserver) package by default. Please see the [NVIDIA - ArchWiki](https://wiki.archlinux.org/title/NVIDIA) page on how to install and configure the legacy proprietary Nvidia drivers. You can also find more information about the XLibre Nvidia support in the [XLibre XServer 25.1 changelog](https://github.com/X11Libre/xserver/wiki/XLibre-XServer-25.1-Changes).
 
+### Migrating From Older Repositories
+
+Until August 12, 2026, there was a mirror for the packages at `https://x11libre.net/repo/arch_based/x86_64`. It has been taken down in favor of the new `https://packages.xlibre.net/arch` scheme. Please update your entries in `/etc/pacman.conf`!
+
+The stable repository is currently available under two keys: `[xlibre-stable]` and the older `[xlibre]`. Please update to `[xlibre-stable]`, as it aligns better with the other `xlibre-oldstable` and `xlibre-beta` repositories. The `[xlibre]` key will be removed at the end of 2026.
+
 ### Further Information on the ArchWiki
 
-Please see the [XLibre - ArchWiki](https://wiki.archlinux.org/title/XLibre) page for more information on the specifics of XLibre on Arch Linux, like the configuration, switching from X.Org Server, and additional software. 
+Please see the [XLibre - ArchWiki](https://wiki.archlinux.org/title/XLibre) page for more information on the specifics of XLibre on Arch Linux, like the configuration, switching from X.Org Server, and additional software.
 
 ## Getting in Contact
 
