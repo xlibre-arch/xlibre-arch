@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightInfo: 2026 callmetango for XLibre
+
+name: Update .SRCINFOs
+
+on:
+  push:
+    branches:
+      - '**'
+    paths-ignore:
+      - '**/.SRCINFO'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-srcinfo-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update-srcinfo:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: callmetango/setup-workspace@master
+      - env:
+          APP_ID: ${{ vars.APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+        run: |
+          auth=$(gh-app-token.sh)
+          GH_APP_SLUG=$(printf '%s\n' "$auth" | cut -f1)
+          GH_TOKEN=$(printf '%s\n' "$auth" | cut -f2)
+          export GH_APP_SLUG GH_TOKEN
+          update-srcinfos.sh
