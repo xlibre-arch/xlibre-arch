@@ -18,7 +18,7 @@ pkgbase = xlibre-video-nouveau
 	conflicts = X-ABI-VIDEODRV_VERSION<28
 	conflicts = X-ABI-VIDEODRV_VERSION>=29
 	conflicts = xf86-video-nouveau
-	source = https://github.com/X11Libre/xf86-video-nouveau/archive/refs/tags/xlibre-xf86-video-nouveau-25.0.0.tar.gz
+	source = https://github.com/X11Libre/xf86-video-nouveau/archive/refs/tags/xlibre-xf86-video-nouveau-25.0.1.tar.gz
 	sha512sums = 4935b2107fa50861341b46b5ff049cbef243c0961436dd3910d5f4f1cb198c2d81d477708f88f9b14f0bf0c4b6585bb5f8625e40126860123bc8f06b3ebfae86
 
 pkgname = xlibre-video-nouveau
