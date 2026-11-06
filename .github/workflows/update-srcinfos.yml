@@ -5,11 +5,19 @@ name: Update .SRCINFOs
 
 on:
   push:
-    branches:
-      - '**'
+    branches-ignore:
+      - 'update/**'
     paths-ignore:
       - '**/.SRCINFO'
   workflow_dispatch:
+    inputs:
+      branch:
+        description: The branch to generate the SRCINFOs on
+        type: choice
+        options:
+          - beta
+          - master
+        default: master
 
 permissions:
   contents: write
@@ -22,14 +30,22 @@ jobs:
   update-srcinfo:
     runs-on: ubuntu-24.04
     steps:
-      - uses: callmetango/setup-workspace@master
-      - env:
+      - name: Setup workspace
+        uses: callmetango/setup-workspace@master
+        with:
+          inputs: ${{ toJSON(inputs) }}
+          vars: ${{ toJSON(vars) }}
+
+      - name: Update .SRCINFOs
+        env:
           APP_ID: ${{ vars.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+          TARGET_BRANCH: ${{ inputs.branch || github.ref_name }}
         run: |
           auth=$(gh-app-token.sh)
-          GH_APP_SLUG=$(printf '%s\n' "$auth" | cut -f1)
-          GH_TOKEN=$(printf '%s\n' "$auth" | cut -f2)
+          GH_APP_SLUG=$(printf '%s\n' "$auth" | cut -f2)
+          GH_TOKEN=$(printf '%s\n' "$auth" | cut -f1)
           export GH_APP_SLUG GH_TOKEN
+
           update-srcinfos.sh

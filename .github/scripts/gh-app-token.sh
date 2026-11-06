@@ -60,4 +60,4 @@ token=$(
 		--jq '.token'
 )
 
-printf '%s\t%s\n' "$app_slug" "$token"
+printf '%s\t%s\n' "$token" "$app_slug"
