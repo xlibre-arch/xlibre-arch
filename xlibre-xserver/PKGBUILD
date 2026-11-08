@@ -4,6 +4,8 @@
 # Contributor: AndyRTR <andyrtr@archlinux.org>
 # Contributor: Jan de Groot <jgc@archlinux.org>
 
+: "${USE_SYSTEMD:=1}"
+
 pkgbase=xlibre-xserver
 pkgname=(
 	'xlibre-xserver'
@@ -14,7 +16,7 @@ pkgname=(
 	'xlibre-xserver-devel' # devel last due to some checks there
 )
 pkgver=25.2.2
-pkgrel=1
+pkgrel=51
 arch=('x86_64')
 license=(
 	'BSD-3-Clause'
@@ -36,9 +38,11 @@ license=(
 groups=('xlibre')
 url="https://xlibre.net"
 makedepends=(
+	'dbus'
 	'libepoxy'
 	'libpciaccess'
 	'libunwind'
+	'libudev.so'
 	'libx11'
 	'libxaw'
 	'libxcvt'
@@ -55,7 +59,6 @@ makedepends=(
 	'mesa-libgl'
 	'meson'
 	'pixman'
-	'systemd'
 	'xcb-util'
 	'xcb-util-image'
 	'xcb-util-keysyms'
@@ -66,6 +69,12 @@ makedepends=(
 	'xorg-xkbcomp'
 	'xorgproto'
 )
+
+((USE_SYSTEMD)) && depends=('libsystemd.so')
+((USE_SYSTEMD)) || optdepends=(
+	'elogind: login1 session management'
+)
+
 source=(
 	https://github.com/X11Libre/xserver/archive/refs/tags/${pkgbase}-"${pkgver}".tar.gz
 	xvfb-run # with updates from FC master
@@ -82,6 +91,9 @@ build() {
 	export CFLAGS=${CFLAGS/-fno-plt}
 	export CXXFLAGS=${CXXFLAGS/-fno-plt}
 	export LDFLAGS=${LDFLAGS/-Wl,-z,now}
+
+	local systemd_notify=false
+	((USE_SYSTEMD)) && systemd_notify=true
 
 	arch-meson "xserver-${pkgbase}-${pkgver}" build \
 		-D xephyr=true \
@@ -105,6 +117,7 @@ build() {
 		-D seatd_libseat=false \
 		-D suid_wrapper=true \
 		-D systemd_logind=true \
+		-D systemd_notify="$systemd_notify" \
 		-D udev=true \
 		-D udev_kms=true \
 		-D xcsecurity=true \
@@ -138,6 +151,7 @@ package_xlibre-xserver-common() {
 		'xorg-setxkbmap'
 		'xorg-xkbcomp'
 	)
+	optdepends=()
 	provides=('xorg-server-common')
 	conflicts=(
 		'xlibre-xserver-common-beta'
@@ -152,8 +166,8 @@ package_xlibre-xserver-common() {
 }
 
 package_xlibre-xserver() {
-	pkgdesc="XLibre X server"
-	depends=(
+	pkgdesc="XLibre Xserver"
+	depends+=(
 		'dbus'
 		'glibc'
 		'libbsd'
@@ -163,6 +177,7 @@ package_xlibre-xserver() {
 		'libpciaccess'
 		'libtirpc'
 		'libunwind'
+		'libudev.so'
 		'libxau'
 		'libxcvt' # FS#52949
 		'libxdmcp'
@@ -171,7 +186,6 @@ package_xlibre-xserver() {
 		'nettle'
 		'pixman'
 		'sh'
-		'systemd-libs'
 		'xlibre-xserver-common'
 	)
 	# see xorg-server-*/hw/xfree86/common/xf86Module.h for ABI versions - we provide major numbers
@@ -183,6 +197,7 @@ package_xlibre-xserver() {
 		'x-server'
 		'xorg-server'
 	)
+	provides+=('x11win-server') # Artix only
 	conflicts=(
 		'glamor-egl'
 		'nvidia-utils<=331.20'
@@ -212,12 +227,13 @@ package_xlibre-xserver() {
 
 package_xlibre-xserver-xephyr() {
 	pkgdesc="A nested X server that runs as an X application"
-	depends=(
+	depends+=(
 		'glibc'
 		'libepoxy'
 		'libgl'
 		'libtirpc'
 		'libunwind'
+		'libudev.so'
 		'libx11'
 		'libxau'
 		'libxdmcp'
@@ -225,7 +241,6 @@ package_xlibre-xserver-xephyr() {
 		'libxshmfence'
 		'nettle'
 		'pixman'
-		'systemd-libs'
 		'xcb-util'
 		'xcb-util-image'
 		'xcb-util-keysyms'
@@ -233,6 +248,7 @@ package_xlibre-xserver-xephyr() {
 		'xcb-util-wm'
 		'xlibre-xserver-common'
 	)
+	optdepends=()
 	provides=('xorg-server-xephyr')
 	conflicts=(
 		'xlibre-xserver-xephyr-beta'
@@ -253,7 +269,7 @@ package_xlibre-xserver-xvfb() {
 		'GPL-2.0-only'
 		'MIT'
 	)
-	depends=(
+	depends+=(
 		'glibc'
 		'libgl'
 		'libtirpc'
@@ -264,10 +280,10 @@ package_xlibre-xserver-xvfb() {
 		'nettle'
 		'pixman'
 		'sh'
-		'systemd-libs'
 		'xlibre-xserver-common'
 		'xorg-xauth'
 	)
+	optdepends=()
 	provides=('xorg-server-xvfb')
 	conflicts=(
 		'xlibre-xserver-xvfb-beta'
@@ -286,7 +302,7 @@ package_xlibre-xserver-xvfb() {
 
 package_xlibre-xserver-xnest() {
 	pkgdesc="A nested X server that runs as an X application"
-	depends=(
+	depends+=(
 		'glibc'
 		'libtirpc'
 		'libunwind'
@@ -297,9 +313,9 @@ package_xlibre-xserver-xnest() {
 		'libxfont2'
 		'nettle'
 		'pixman'
-		'systemd-libs'
 		'xlibre-xserver-common'
 	)
+	optdepends=()
 	provides=('xorg-server-xnest')
 	conflicts=(
 		'xlibre-xserver-xnest-beta'
@@ -323,6 +339,7 @@ package_xlibre-xserver-devel() {
 		'xorg-util-macros' # not required but almost every XLibre pkg needs it
 		'xorgproto'
 	)
+	optdepends=()
 	provides=('xorg-server-devel')
 	conflicts=(
 		'xlibre-xserver-devel-beta'
