@@ -1,7 +1,7 @@
 # Maintainer: callmetango
 
 pkgname=xlibre-meta
-pkgver=25.1
+pkgver=25.0
 pkgrel=51
 pkgdesc="Meta package to install XLibre, a fork of Xorg"
 arch=('any')
