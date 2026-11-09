@@ -15,8 +15,8 @@ pkgname=(
 	'xlibre-xserver-xvfb'
 	'xlibre-xserver-devel' # devel last due to some checks there
 )
-pkgver=25.0.0.25
-pkgrel=51
+pkgver=25.0.0.26
+pkgrel=1
 arch=('x86_64')
 license=(
 	'BSD-3-Clause'
@@ -81,7 +81,7 @@ source=(
 	xvfb-run # with updates from FC master
 	xvfb-run.1
 )
-sha512sums=('c2a53c673460642cab15a056e4cf8919cf4b52319a394514197cc924d4867e2fac806042387e42ac8a1b203c6e415307a2a07a9bcc56ea2f464d434324635f17'
+sha512sums=('8684a4464777f1d7b44348b57ae6abaee532cae7354e722e6ef55f6da7d145f23938a4ea9a25619c9e872aebbe361038d7bb32815dd2b012cfc746a6e01253b9'
             '672375cb5028ba9cda286e317d17bd8c9a9039483e7f79c21f223fd08ba07655729e9f59a082f4b8f5d8de45a77a9e9affce1002fb8c6657e26ef1a490654e49'
             'de5e2cb3c6825e6cf1f07ca0d52423e17f34d70ec7935e9dd24be5fb9883bf1e03b50ff584931bd3b41095c510ab2aa44d2573fd5feaebdcb59363b65607ff22')
 
