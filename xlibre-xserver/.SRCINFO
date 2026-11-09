@@ -1,6 +1,6 @@
 pkgbase = xlibre-xserver
-	pkgver = 25.1.9
-	pkgrel = 51
+	pkgver = 25.1.11
+	pkgrel = 1
 	url = https://xlibre.net
 	arch = x86_64
 	groups = xlibre
@@ -50,10 +50,10 @@ pkgbase = xlibre-xserver
 	makedepends = xorg-xkbcomp
 	makedepends = xorgproto
 	depends = libsystemd.so
-	source = https://github.com/X11Libre/xserver/archive/refs/tags/xlibre-xserver-25.1.9.tar.gz
+	source = https://github.com/X11Libre/xserver/archive/refs/tags/xlibre-xserver-25.1.11.tar.gz
 	source = xvfb-run
 	source = xvfb-run.1
-	sha512sums = ef3d142f1842b415ec4ee18cc8eb3d537700658717c1610e1c2ac20f35711807c140803bd36be4db719d1e40abdbd2eb3b0ca899c018361e3a3762a8b269f29a
+	sha512sums = cc36ff54f915532abb364c1845be98136d1ebbab63f3004d0330af56dd3e7c079466059add113f408d942dc736b539e24b244b2941d3ad19b1fa7823499e791d
 	sha512sums = 672375cb5028ba9cda286e317d17bd8c9a9039483e7f79c21f223fd08ba07655729e9f59a082f4b8f5d8de45a77a9e9affce1002fb8c6657e26ef1a490654e49
 	sha512sums = de5e2cb3c6825e6cf1f07ca0d52423e17f34d70ec7935e9dd24be5fb9883bf1e03b50ff584931bd3b41095c510ab2aa44d2573fd5feaebdcb59363b65607ff22
 
