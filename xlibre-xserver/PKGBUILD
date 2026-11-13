@@ -16,7 +16,7 @@ pkgname=(
 	'xlibre-xserver-devel' # devel last due to some checks there
 )
 pkgver=25.1.11
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 license=(
 	'BSD-3-Clause'
@@ -79,10 +79,17 @@ source=(
 	https://github.com/X11Libre/xserver/archive/refs/tags/${pkgbase}-"${pkgver}".tar.gz
 	xvfb-run # with updates from FC master
 	xvfb-run.1
+	xlibre-xserver-gh-4080-revert-link-libxserver_glx.patch
 )
 sha512sums=('cc36ff54f915532abb364c1845be98136d1ebbab63f3004d0330af56dd3e7c079466059add113f408d942dc736b539e24b244b2941d3ad19b1fa7823499e791d'
             '672375cb5028ba9cda286e317d17bd8c9a9039483e7f79c21f223fd08ba07655729e9f59a082f4b8f5d8de45a77a9e9affce1002fb8c6657e26ef1a490654e49'
-            'de5e2cb3c6825e6cf1f07ca0d52423e17f34d70ec7935e9dd24be5fb9883bf1e03b50ff584931bd3b41095c510ab2aa44d2573fd5feaebdcb59363b65607ff22')
+            'de5e2cb3c6825e6cf1f07ca0d52423e17f34d70ec7935e9dd24be5fb9883bf1e03b50ff584931bd3b41095c510ab2aa44d2573fd5feaebdcb59363b65607ff22'
+            'f892af8f8de171a96cecab61a990bd58841ea8b89b970a59c823cfd5689d372d78aaa6d812d149663895846fb7feb34031c7eb9838530f473c361936673d1e4c')
+
+prepare() {
+	cd "xserver-${pkgbase}-${pkgver}"
+	patch -Np1 < "$srcdir/xlibre-xserver-gh-4080-revert-link-libxserver_glx.patch"
+}
 
 build() {
 	# Since pacman 5.0.2-2, hardened flags are now enabled in makepkg.conf
