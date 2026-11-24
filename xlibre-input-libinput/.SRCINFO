@@ -1,6 +1,6 @@
 pkgbase = xlibre-input-libinput
 	pkgdesc = Generic input driver for the XLibre Xserver based on libinput
-	pkgver = 25.0.2rc1
+	pkgver = 25.0.2rc2
 	pkgrel = 1
 	url = https://github.com/X11Libre/xf86-input-libinput
 	arch = x86_64
@@ -18,7 +18,7 @@ pkgbase = xlibre-input-libinput
 	conflicts = X-ABI-XINPUT_VERSION<26
 	conflicts = X-ABI-XINPUT_VERSION>=27
 	conflicts = xf86-input-libinput
-	source = https://github.com/X11Libre/xf86-input-libinput/archive/refs/tags/xlibre-xf86-input-libinput-25.0.2-rc1.tar.gz
-	sha512sums = 7d886efdaac5cefffb90243389c7cb1e722e33c720bf173b2475be054fd81983970ac49616e5f30b480049866d147612dcff7e010164ece745427a125051e7d5
+	source = https://github.com/X11Libre/xf86-input-libinput/archive/refs/tags/xlibre-xf86-input-libinput-25.0.2-rc2.tar.gz
+	sha512sums = 7f96f4d718d1313776b1b2f0c24f2fb235700e65168e1ef6e4669c2c394354e5ba5297021805f2e86c64dff27f88e86e3a7f4dd6e5b44455e7141c305d816024
 
 pkgname = xlibre-input-libinput
