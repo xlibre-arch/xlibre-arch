@@ -6,7 +6,7 @@
 
 pkgname=xlibre-input-libinput
 _pkgname=xf86-input-libinput
-pkgver=25.0.2rc1
+pkgver=25.0.2rc2
 pkgrel=1
 pkgdesc="Generic input driver for the XLibre Xserver based on libinput"
 arch=('x86_64')
@@ -35,7 +35,7 @@ groups=('xlibre-drivers')
 _srcver=${pkgver/rc/-rc}
 
 source=("${url}/archive/refs/tags/xlibre-${_pkgname}-${_srcver}.tar.gz")
-sha512sums=('7d886efdaac5cefffb90243389c7cb1e722e33c720bf173b2475be054fd81983970ac49616e5f30b480049866d147612dcff7e010164ece745427a125051e7d5')
+sha512sums=('7f96f4d718d1313776b1b2f0c24f2fb235700e65168e1ef6e4669c2c394354e5ba5297021805f2e86c64dff27f88e86e3a7f4dd6e5b44455e7141c305d816024')
 
 build() {
 	arch-meson "$_pkgname-xlibre-$_pkgname-$_srcver" build \
