@@ -15,7 +15,7 @@ pkgname=(
 	'xlibre-xserver-xvfb'
 	'xlibre-xserver-devel' # devel last due to some checks there
 )
-pkgver=25.0.0.26
+pkgver=25.0.0.27rc1
 pkgrel=1
 arch=('x86_64')
 license=(
@@ -76,12 +76,15 @@ makedepends=(
 	'elogind: login1 session management'
 )
 
+_srcver=${pkgver/rc/-rc}
+_S=xserver-${pkgbase}-${_srcver}
+
 source=(
-	https://github.com/X11Libre/xserver/archive/refs/tags/${pkgbase}-"${pkgver}".tar.gz
+	https://github.com/X11Libre/xserver/archive/refs/tags/${pkgbase}-"${_srcver}".tar.gz
 	xvfb-run # with updates from FC master
 	xvfb-run.1
 )
-sha512sums=('8684a4464777f1d7b44348b57ae6abaee532cae7354e722e6ef55f6da7d145f23938a4ea9a25619c9e872aebbe361038d7bb32815dd2b012cfc746a6e01253b9'
+sha512sums=('89019e6cd6aba9036c9c4f2ec706d3a837ff2dab9c5234059b8d6e0c502e6736b0d9760d1870e806ca8d960ed763c55fd984926c71c02c293f604b28dd7fc6e7'
             '672375cb5028ba9cda286e317d17bd8c9a9039483e7f79c21f223fd08ba07655729e9f59a082f4b8f5d8de45a77a9e9affce1002fb8c6657e26ef1a490654e49'
             'de5e2cb3c6825e6cf1f07ca0d52423e17f34d70ec7935e9dd24be5fb9883bf1e03b50ff584931bd3b41095c510ab2aa44d2573fd5feaebdcb59363b65607ff22')
 
@@ -93,7 +96,7 @@ build() {
 	export CXXFLAGS=${CXXFLAGS/-fno-plt}
 	export LDFLAGS=${LDFLAGS/-Wl,-z,now}
 
-	arch-meson "xserver-${pkgbase}-${pkgver}" build \
+	arch-meson "$_S" build \
 		-D ipv6=true \
 		-D xvfb=true \
 		-D xnest=true \
@@ -115,19 +118,18 @@ build() {
 	meson configure build
 	ninja -C build
 
-	# fake installation to be seperated into packages
-	DESTDIR="${srcdir}/fakeinstall" ninja -C build install
+	# fake installation to be separated into packages
+	DESTDIR="${srcdir}/_" ninja -C build install
 }
 
 _install() {
-	local src f dir
+	local src dest
+
 	for src; do
-		f="${src#fakeinstall/}"
-		dir="${pkgdir}/${f%/*}"
-		install -m755 -d "${dir}"
-		# use copy so a new file is created and fakeroot can track properties such as setuid
-		cp -av "${src}" "${dir}/"
-		rm -rf "${src}"
+		dest=${src#_/}
+		install -d "$pkgdir/${dest%/*}"
+		cp -av "$src" "$pkgdir/$dest" || return
+		rm -rf "$src" || return
 	done
 }
 
@@ -145,12 +147,11 @@ package_xlibre-xserver-common() {
 		'xorg-server-common'
 	)
 
-	_install fakeinstall/usr/lib/xorg/protocol.txt
-	_install fakeinstall/usr/share/man/man1/Xserver.1
+	_install _/usr/lib/xorg/protocol.txt
+	_install _/usr/share/man/man1/Xserver.1
 
-	install -m644 -Dt "${pkgdir}/var/lib/xkb/" "xserver-${pkgbase}-${pkgver}"/xkb/README.compiled
-	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 -Dt "${pkgdir}/var/lib/xkb/" "$_S"/xkb/README.compiled
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 }
 
 package_xlibre-xserver() {
@@ -198,19 +199,29 @@ package_xlibre-xserver() {
 		'xf86-video-modesetting'
 	)
 
-	_install fakeinstall/usr/bin/{X,Xorg,gtf}
-	_install fakeinstall/usr/lib/Xorg{,.wrap}
-	_install fakeinstall/usr/lib/xorg/modules/*
-	_install fakeinstall/usr/share/X11/xorg.conf.d/10-quirks.conf
-	_install fakeinstall/usr/share/man/man1/{Xorg,Xorg.wrap,gtf}.1
-	_install fakeinstall/usr/share/man/man4/{exa,fbdevhw,inputtestdrv,modesetting}.4
-	_install fakeinstall/usr/share/man/man5/{Xwrapper.config,xorg.conf,xorg.conf.d}.5
+	_install _/usr/bin/gtf
+	_install _/usr/bin/X
+	_install _/usr/bin/Xorg
+	_install _/usr/lib/Xorg
+	_install _/usr/lib/Xorg.wrap
+	_install _/usr/lib/xorg/modules/*
+	_install _/usr/share/X11/xorg.conf.d/10-quirks.conf
+	_install _/usr/share/man/man1/gtf.1
+	_install _/usr/share/man/man1/Xkdrive.1
+	_install _/usr/share/man/man1/Xorg.1
+	_install _/usr/share/man/man1/Xorg.wrap.1
+	_install _/usr/share/man/man4/exa.4
+	_install _/usr/share/man/man4/fbdevhw.4
+	_install _/usr/share/man/man4/inputtestdrv.4
+	_install _/usr/share/man/man4/modesetting.4
+	_install _/usr/share/man/man5/Xwrapper.config.5
+	_install _/usr/share/man/man5/xorg.conf.5
+	_install _/usr/share/man/man5/xorg.conf.d.5
 
 	# distro specific files must be installed in /usr/share/X11/xorg.conf.d
 	install -m755 -d "${pkgdir}/etc/X11/xorg.conf.d"
 
-	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 }
 
 package_xlibre-xserver-xephyr() {
@@ -243,11 +254,10 @@ package_xlibre-xserver-xephyr() {
 		'xorg-server-xephyr'
 	)
 
-	_install fakeinstall/usr/bin/Xephyr
-	_install fakeinstall/usr/share/man/man1/Xephyr.1
+	_install _/usr/bin/Xephyr
+	_install _/usr/share/man/man1/Xephyr.1
 
-	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 }
 
 package_xlibre-xserver-xvfb() {
@@ -278,14 +288,12 @@ package_xlibre-xserver-xvfb() {
 		'xorg-server-xvfb'
 	)
 
-	_install fakeinstall/usr/bin/Xvfb
-	_install fakeinstall/usr/share/man/man1/Xvfb.1
+	_install _/usr/bin/Xvfb
+	_install _/usr/share/man/man1/Xvfb.1
 
 	install -m755 "${srcdir}/xvfb-run" "${pkgdir}/usr/bin/"
-	install -m644 "${srcdir}/xvfb-run.1" "${pkgdir}/usr/share/man/man1/" # outda
-
-	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 "${srcdir}/xvfb-run.1" "${pkgdir}/usr/share/man/man1/"
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 }
 
 package_xlibre-xserver-xnest() {
@@ -310,11 +318,10 @@ package_xlibre-xserver-xnest() {
 		'xorg-server-xnest'
 	)
 
-	_install fakeinstall/usr/bin/Xnest
-	_install fakeinstall/usr/share/man/man1/Xnest.1
+	_install _/usr/bin/Xnest
+	_install _/usr/share/man/man1/Xnest.1
 
-	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 }
 
 package_xlibre-xserver-devel() {
@@ -334,14 +341,14 @@ package_xlibre-xserver-devel() {
 		'xorg-server-devel'
 	)
 
-	_install fakeinstall/usr/include/xorg/*
-	_install fakeinstall/usr/lib/pkgconfig/xlibre-server.pc
-	_install fakeinstall/usr/lib/pkgconfig/xorg-server.pc
-	_install fakeinstall/usr/share/aclocal/xorg-server.m4
+	_install _/usr/include/xorg/*
+	_install _/usr/lib/pkgconfig/*
+	_install _/usr/share/aclocal/*
+	_install _/usr/share/xorg-server/abi/*
 
 	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 
 	# make sure there are no files left to install
-	find fakeinstall -depth -print0 | xargs -0 rmdir
+	find _ -depth -print0 | xargs -0 rmdir
 }
