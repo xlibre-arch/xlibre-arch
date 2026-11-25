@@ -17,6 +17,7 @@ on:
         options:
           - beta
           - master
+          - oldstable
         default: master
 
 permissions:
