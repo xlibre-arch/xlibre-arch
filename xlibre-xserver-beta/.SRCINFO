@@ -1,5 +1,5 @@
-pkgbase = xlibre-xserver
-	pkgver = 25.2.3
+pkgbase = xlibre-xserver-beta
+	pkgver = 25.2.4rc1
 	pkgrel = 1
 	url = https://xlibre.net
 	arch = x86_64
@@ -50,14 +50,14 @@ pkgbase = xlibre-xserver
 	makedepends = xorg-xkbcomp
 	makedepends = xorgproto
 	depends = libsystemd.so
-	source = https://github.com/X11Libre/xserver/archive/refs/tags/xlibre-xserver-25.2.3.tar.gz
+	source = https://github.com/X11Libre/xserver/archive/refs/tags/xlibre-xserver-25.2.4-rc1.tar.gz
 	source = xvfb-run
 	source = xvfb-run.1
-	sha512sums = 189e9ce44ba11154511c89a40b63378821a19d2c05aeb29b3427fbf726ce6bb2c4ae5819550bb7d12e908d60cb8187c7657677f73c091ca08f2ed33b3380e9a2
+	sha512sums = cae2a3f1cd70cfd5c7307788189d8f5a04e9f12a824a478399220cbfcdff613d1ca7be387e4706effd423019db8e861067b71f5bf74b3ed000bee5dc3141c547
 	sha512sums = 672375cb5028ba9cda286e317d17bd8c9a9039483e7f79c21f223fd08ba07655729e9f59a082f4b8f5d8de45a77a9e9affce1002fb8c6657e26ef1a490654e49
 	sha512sums = de5e2cb3c6825e6cf1f07ca0d52423e17f34d70ec7935e9dd24be5fb9883bf1e03b50ff584931bd3b41095c510ab2aa44d2573fd5feaebdcb59363b65607ff22
 
-pkgname = xlibre-xserver
+pkgname = xlibre-xserver-beta
 	pkgdesc = XLibre Xserver
 	depends = libsystemd.so
 	depends = dbus
@@ -78,32 +78,36 @@ pkgname = xlibre-xserver
 	depends = nettle
 	depends = pixman
 	depends = sh
-	depends = xlibre-xserver-common
+	depends = xlibre-xserver-common-beta
 	provides = X-ABI-EXTENSION_VERSION=11.0
 	provides = X-ABI-VIDEODRV_VERSION=28.0
 	provides = X-ABI-XINPUT_VERSION=26.0
 	provides = x-server
+	provides = xlibre-xserver
 	provides = xorg-server
 	provides = x11win-server
 	conflicts = glamor-egl
 	conflicts = nvidia-utils<=331.20
 	conflicts = xf86-video-modesetting
-	conflicts = xlibre-xserver-beta
+	conflicts = xlibre-xserver
 	conflicts = xorg-server
 	replaces = glamor-egl
 	replaces = xf86-video-modesetting
+	replaces = xlibre-xserver>=25.2.0
 
-pkgname = xlibre-xserver-common
+pkgname = xlibre-xserver-common-beta
 	pkgdesc = XLibre server common files
 	depends = xkeyboard-config
 	depends = xorg-setxkbmap
 	depends = xorg-xkbcomp
 	optdepends = 
+	provides = xlibre-xserver-common
 	provides = xorg-server-common
-	conflicts = xlibre-xserver-common-beta
+	conflicts = xlibre-xserver-common
 	conflicts = xorg-server-common
+	replaces = xlibre-xserver-common>=25.2.0
 
-pkgname = xlibre-xserver-xephyr
+pkgname = xlibre-xserver-xephyr-beta
 	pkgdesc = A nested X server that runs as an X application
 	depends = libsystemd.so
 	depends = glibc
@@ -124,13 +128,15 @@ pkgname = xlibre-xserver-xephyr
 	depends = xcb-util-keysyms
 	depends = xcb-util-renderutil
 	depends = xcb-util-wm
-	depends = xlibre-xserver-common
+	depends = xlibre-xserver-common-beta
 	optdepends = 
+	provides = xlibre-xserver-xephyr
 	provides = xorg-server-xephyr
-	conflicts = xlibre-xserver-xephyr-beta
+	conflicts = xlibre-xserver-xephyr
 	conflicts = xorg-server-xephyr
+	replaces = xlibre-xserver-xephyr>=25.2.0
 
-pkgname = xlibre-xserver-xnest
+pkgname = xlibre-xserver-xnest-beta
 	pkgdesc = A nested X server that runs as an X application
 	depends = libsystemd.so
 	depends = glibc
@@ -143,13 +149,15 @@ pkgname = xlibre-xserver-xnest
 	depends = libxfont2
 	depends = nettle
 	depends = pixman
-	depends = xlibre-xserver-common
+	depends = xlibre-xserver-common-beta
 	optdepends = 
+	provides = xlibre-xserver-xnest
 	provides = xorg-server-xnest
-	conflicts = xlibre-xserver-xnest-beta
+	conflicts = xlibre-xserver-xnest
 	conflicts = xorg-server-xnest
+	replaces = xlibre-xserver-xnest>=25.2.0
 
-pkgname = xlibre-xserver-xvfb
+pkgname = xlibre-xserver-xvfb-beta
 	pkgdesc = Virtual framebuffer X server
 	license = GPL-2.0-only
 	license = MIT
@@ -164,22 +172,26 @@ pkgname = xlibre-xserver-xvfb
 	depends = nettle
 	depends = pixman
 	depends = sh
-	depends = xlibre-xserver-common
+	depends = xlibre-xserver-common-beta
 	depends = xorg-xauth
 	optdepends = 
+	provides = xlibre-xserver-xvfb
 	provides = xorg-server-xvfb
-	conflicts = xlibre-xserver-xvfb-beta
+	conflicts = xlibre-xserver-xvfb
 	conflicts = xorg-server-xvfb
+	replaces = xlibre-xserver-xvfb>=25.2.0
 
-pkgname = xlibre-xserver-devel
+pkgname = xlibre-xserver-devel-beta
 	pkgdesc = Development files for the XLibre Xserver
 	depends = libpciaccess
 	depends = mesa
 	depends = pixman
-	depends = xlibre-xserver
+	depends = xlibre-xserver-beta
 	depends = xorg-util-macros
 	depends = xorgproto
 	optdepends = 
+	provides = xlibre-xserver-devel
 	provides = xorg-server-devel
-	conflicts = xlibre-xserver-devel-beta
+	conflicts = xlibre-xserver-devel
 	conflicts = xorg-server-devel
+	replaces = xlibre-xserver-devel>=25.2.0

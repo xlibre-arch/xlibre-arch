@@ -6,16 +6,17 @@
 
 : "${USE_SYSTEMD:=1}"
 
-pkgbase=xlibre-xserver
+pkgbase=xlibre-xserver-beta
+_pkgbase=xlibre-xserver
 pkgname=(
-	'xlibre-xserver'
-	'xlibre-xserver-common'
-	'xlibre-xserver-xephyr'
-	'xlibre-xserver-xnest'
-	'xlibre-xserver-xvfb'
-	'xlibre-xserver-devel' # devel last due to some checks there
+	'xlibre-xserver-beta'
+	'xlibre-xserver-common-beta'
+	'xlibre-xserver-xephyr-beta'
+	'xlibre-xserver-xnest-beta'
+	'xlibre-xserver-xvfb-beta'
+	'xlibre-xserver-devel-beta' # devel last due to some checks there
 )
-pkgver=25.2.3
+pkgver=25.2.4rc1
 pkgrel=1
 arch=('x86_64')
 license=(
@@ -75,12 +76,15 @@ makedepends=(
 	'elogind: login1 session management'
 )
 
+_srcver=${pkgver/rc/-rc}
+_S=xserver-${_pkgbase}-${_srcver}
+
 source=(
-	https://github.com/X11Libre/xserver/archive/refs/tags/${pkgbase}-"${pkgver}".tar.gz
+	https://github.com/X11Libre/xserver/archive/refs/tags/${_pkgbase}-"${_srcver}".tar.gz
 	xvfb-run # with updates from FC master
 	xvfb-run.1
 )
-sha512sums=('189e9ce44ba11154511c89a40b63378821a19d2c05aeb29b3427fbf726ce6bb2c4ae5819550bb7d12e908d60cb8187c7657677f73c091ca08f2ed33b3380e9a2'
+sha512sums=('cae2a3f1cd70cfd5c7307788189d8f5a04e9f12a824a478399220cbfcdff613d1ca7be387e4706effd423019db8e861067b71f5bf74b3ed000bee5dc3141c547'
             '672375cb5028ba9cda286e317d17bd8c9a9039483e7f79c21f223fd08ba07655729e9f59a082f4b8f5d8de45a77a9e9affce1002fb8c6657e26ef1a490654e49'
             'de5e2cb3c6825e6cf1f07ca0d52423e17f34d70ec7935e9dd24be5fb9883bf1e03b50ff584931bd3b41095c510ab2aa44d2573fd5feaebdcb59363b65607ff22')
 
@@ -95,7 +99,7 @@ build() {
 	local systemd_notify=false
 	((USE_SYSTEMD)) && systemd_notify=true
 
-	arch-meson "xserver-${pkgbase}-${pkgver}" build \
+	arch-meson "$_S" build \
 		-D xephyr=true \
 		-D xfbdev=true \
 		-D xnest=true \
@@ -128,23 +132,22 @@ build() {
 	meson configure build
 	ninja -C build
 
-	# fake installation to be seperated into packages
-	DESTDIR="${srcdir}/fakeinstall" ninja -C build install
+	# fake installation to be separated into packages
+	DESTDIR="${srcdir}/_" ninja -C build install
 }
 
 _install() {
-	local src f dir
+	local src dest
+
 	for src; do
-		f="${src#fakeinstall/}"
-		dir="${pkgdir}/${f%/*}"
-		install -m755 -d "${dir}"
-		# use copy so a new file is created and fakeroot can track properties such as setuid
-		cp -av "${src}" "${dir}/"
-		rm -rf "${src}"
+		dest=${src#_/}
+		install -d "$pkgdir/${dest%/*}"
+		cp -av "$src" "$pkgdir/$dest" || return
+		rm -rf "$src" || return
 	done
 }
 
-package_xlibre-xserver-common() {
+package_xlibre-xserver-common-beta() {
 	pkgdesc="XLibre server common files"
 	depends=(
 		'xkeyboard-config'
@@ -152,20 +155,23 @@ package_xlibre-xserver-common() {
 		'xorg-xkbcomp'
 	)
 	optdepends=()
-	provides=('xorg-server-common')
-	conflicts=(
-		'xlibre-xserver-common-beta'
+	provides=(
+		'xlibre-xserver-common'
 		'xorg-server-common'
 	)
+	conflicts=(
+		'xlibre-xserver-common'
+		'xorg-server-common'
+	)
+	replaces=('xlibre-xserver-common>=25.2.0')
 
-	_install fakeinstall/usr/lib/xorg/protocol.txt
-	_install fakeinstall/usr/share/man/man1/Xserver.1
+	_install _/usr/lib/xorg/protocol.txt
+	_install _/usr/share/man/man1/Xserver.1
 
-	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 }
 
-package_xlibre-xserver() {
+package_xlibre-xserver-beta() {
 	pkgdesc="XLibre Xserver"
 	depends+=(
 		'dbus'
@@ -186,7 +192,7 @@ package_xlibre-xserver() {
 		'nettle'
 		'pixman'
 		'sh'
-		'xlibre-xserver-common'
+		'xlibre-xserver-common-beta'
 	)
 	# see xorg-server-*/hw/xfree86/common/xf86Module.h for ABI versions - we provide major numbers
 	# that drivers can depend on and /usr/lib/pkgconfig/xorg-server.pc in xorg-server-devel pkg
@@ -195,6 +201,7 @@ package_xlibre-xserver() {
 		'X-ABI-VIDEODRV_VERSION=28.0'
 		'X-ABI-XINPUT_VERSION=26.0'
 		'x-server'
+		'xlibre-xserver'
 		'xorg-server'
 	)
 	provides+=('x11win-server') # Artix only
@@ -202,30 +209,45 @@ package_xlibre-xserver() {
 		'glamor-egl'
 		'nvidia-utils<=331.20'
 		'xf86-video-modesetting'
-		'xlibre-xserver-beta'
+		'xlibre-xserver'
 		'xorg-server'
 	)
 	replaces=(
 		'glamor-egl'
 		'xf86-video-modesetting'
+		'xlibre-xserver>=25.2.0'
 	)
 
-	_install fakeinstall/usr/bin/{X,Xorg,gtf,Xfbdev}
-	_install fakeinstall/usr/lib/Xorg{,.wrap}
-	_install fakeinstall/usr/lib/xorg/modules/*
-	_install fakeinstall/usr/share/X11/xorg.conf.d/10-{nvidia,nvidia-modules,quirks}.conf
-	_install fakeinstall/usr/share/man/man1/{Xorg,Xorg.wrap,gtf,Xfbdev,Xkdrive}.1
-	_install fakeinstall/usr/share/man/man4/{exa,fbdevhw,inputtestdrv,modesetting}.4
-	_install fakeinstall/usr/share/man/man5/{Xwrapper.config,xorg.conf,xorg.conf.d}.5
+	_install _/usr/bin/gtf
+	_install _/usr/bin/X
+	_install _/usr/bin/Xfbdev
+	_install _/usr/bin/Xorg
+	_install _/usr/lib/Xorg
+	_install _/usr/lib/Xorg.wrap
+	_install _/usr/lib/xorg/modules/*
+	_install _/usr/share/X11/xorg.conf.d/10-nvidia.conf
+	_install _/usr/share/X11/xorg.conf.d/10-nvidia-modules.conf
+	_install _/usr/share/X11/xorg.conf.d/10-quirks.conf
+	_install _/usr/share/man/man1/gtf.1
+	_install _/usr/share/man/man1/Xfbdev.1
+	_install _/usr/share/man/man1/Xkdrive.1
+	_install _/usr/share/man/man1/Xorg.1
+	_install _/usr/share/man/man1/Xorg.wrap.1
+	_install _/usr/share/man/man4/exa.4
+	_install _/usr/share/man/man4/fbdevhw.4
+	_install _/usr/share/man/man4/inputtestdrv.4
+	_install _/usr/share/man/man4/modesetting.4
+	_install _/usr/share/man/man5/Xwrapper.config.5
+	_install _/usr/share/man/man5/xorg.conf.5
+	_install _/usr/share/man/man5/xorg.conf.d.5
 
 	# distro specific files must be installed in /usr/share/X11/xorg.conf.d
 	install -m755 -d "${pkgdir}/etc/X11/xorg.conf.d"
 
-	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 }
 
-package_xlibre-xserver-xephyr() {
+package_xlibre-xserver-xephyr-beta() {
 	pkgdesc="A nested X server that runs as an X application"
 	depends+=(
 		'glibc'
@@ -246,23 +268,26 @@ package_xlibre-xserver-xephyr() {
 		'xcb-util-keysyms'
 		'xcb-util-renderutil'
 		'xcb-util-wm'
-		'xlibre-xserver-common'
+		'xlibre-xserver-common-beta'
 	)
 	optdepends=()
-	provides=('xorg-server-xephyr')
-	conflicts=(
-		'xlibre-xserver-xephyr-beta'
+	provides=(
+		'xlibre-xserver-xephyr'
 		'xorg-server-xephyr'
 	)
+	conflicts=(
+		'xlibre-xserver-xephyr'
+		'xorg-server-xephyr'
+	)
+	replaces=('xlibre-xserver-xephyr>=25.2.0')
 
-	_install fakeinstall/usr/bin/Xephyr
-	_install fakeinstall/usr/share/man/man1/Xephyr.1
+	_install _/usr/bin/Xephyr
+	_install _/usr/share/man/man1/Xephyr.1
 
-	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 }
 
-package_xlibre-xserver-xvfb() {
+package_xlibre-xserver-xvfb-beta() {
 	pkgdesc="Virtual framebuffer X server"
 	# xvfb-run is GPLv2, rest is MIT
 	license=(
@@ -280,27 +305,29 @@ package_xlibre-xserver-xvfb() {
 		'nettle'
 		'pixman'
 		'sh'
-		'xlibre-xserver-common'
+		'xlibre-xserver-common-beta'
 		'xorg-xauth'
 	)
 	optdepends=()
-	provides=('xorg-server-xvfb')
-	conflicts=(
-		'xlibre-xserver-xvfb-beta'
+	provides=(
+		'xlibre-xserver-xvfb'
 		'xorg-server-xvfb'
 	)
+	conflicts=(
+		'xlibre-xserver-xvfb'
+		'xorg-server-xvfb'
+	)
+	replaces=('xlibre-xserver-xvfb>=25.2.0')
 
-	_install fakeinstall/usr/bin/Xvfb
-	_install fakeinstall/usr/share/man/man1/Xvfb.1
+	_install _/usr/bin/Xvfb
+	_install _/usr/share/man/man1/Xvfb.1
 
 	install -m755 "${srcdir}/xvfb-run" "${pkgdir}/usr/bin/"
-	install -m644 "${srcdir}/xvfb-run.1" "${pkgdir}/usr/share/man/man1/" # outda
-
-	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 "${srcdir}/xvfb-run.1" "${pkgdir}/usr/share/man/man1/"
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 }
 
-package_xlibre-xserver-xnest() {
+package_xlibre-xserver-xnest-beta() {
 	pkgdesc="A nested X server that runs as an X application"
 	depends+=(
 		'glibc'
@@ -313,50 +340,56 @@ package_xlibre-xserver-xnest() {
 		'libxfont2'
 		'nettle'
 		'pixman'
-		'xlibre-xserver-common'
+		'xlibre-xserver-common-beta'
 	)
 	optdepends=()
-	provides=('xorg-server-xnest')
-	conflicts=(
-		'xlibre-xserver-xnest-beta'
+	provides=(
+		'xlibre-xserver-xnest'
 		'xorg-server-xnest'
 	)
+	conflicts=(
+		'xlibre-xserver-xnest'
+		'xorg-server-xnest'
+	)
+	replaces=('xlibre-xserver-xnest>=25.2.0')
 
-	_install fakeinstall/usr/bin/Xnest
-	_install fakeinstall/usr/share/man/man1/Xnest.1
+	_install _/usr/bin/Xnest
+	_install _/usr/share/man/man1/Xnest.1
 
-	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 }
 
-package_xlibre-xserver-devel() {
+package_xlibre-xserver-devel-beta() {
 	pkgdesc="Development files for the XLibre Xserver"
 	depends=(
 		'libpciaccess'
 		'mesa'
 		'pixman'
-		'xlibre-xserver'
+		'xlibre-xserver-beta'
 		'xorg-util-macros' # not required but almost every XLibre pkg needs it
 		'xorgproto'
 	)
 	optdepends=()
-	provides=('xorg-server-devel')
-	conflicts=(
-		'xlibre-xserver-devel-beta'
+	provides=(
+		'xlibre-xserver-devel'
 		'xorg-server-devel'
 	)
+	conflicts=(
+		'xlibre-xserver-devel'
+		'xorg-server-devel'
+	)
+	replaces=('xlibre-xserver-devel>=25.2.0')
 
-	rm fakeinstall/etc/X11/xorg.conf.d/10-nvidia-modules.conf.debian
-	rm fakeinstall/etc/X11/xorg.conf.d/10-nvidia.conf.debian
-
-	_install fakeinstall/usr/include/xorg/*
-	_install fakeinstall/usr/lib/pkgconfig/xlibre-server.pc
-	_install fakeinstall/usr/lib/pkgconfig/xorg-server.pc
-	_install fakeinstall/usr/share/aclocal/xorg-server.m4
+	_install _/usr/include/xorg/*
+	_install _/usr/lib/pkgconfig/*
+	_install _/usr/share/aclocal/*
+	_install _/usr/share/xorg-server/abi/*
 
 	# license
-	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "xserver-${pkgbase}-${pkgver}"/COPYING
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" "$_S"/COPYING
 
 	# make sure there are no files left to install
-	find fakeinstall -depth -print0 | xargs -0 rmdir
+	rm _/etc/X11/xorg.conf.d/10-nvidia-modules.conf.debian
+	rm _/etc/X11/xorg.conf.d/10-nvidia.conf.debian
+	find _ -depth -print0 | xargs -0 rmdir
 }

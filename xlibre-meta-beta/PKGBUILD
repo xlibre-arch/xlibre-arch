@@ -1,15 +1,15 @@
 # Maintainer: callmetango
 
-pkgname=xlibre-meta
+pkgname=xlibre-meta-beta
 pkgver=25.2
-pkgrel=51
+pkgrel=1
 pkgdesc="Meta package to install XLibre, a fork of Xorg"
 arch=('any')
 license=('None')
 url='https://xlibre.net'
 depends=(
 	'xlibre-input-libinput'
-	'xlibre-xserver'
+	'xlibre-xserver-beta'
 )
 optdepends=(
 	'nvidia-open: NVIDIA open kernel modules'
@@ -20,3 +20,6 @@ optdepends=(
 	'xlibre-video-intel: Intel video driver'
 	'xlibre-video-qxl: qxl video driver'
 )
+provides=('xlibre-meta')
+conflicts=('xlibre-meta')
+replaces=('xlibre-meta>=25.2')
